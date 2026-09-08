@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { BookOpen, ExternalLink, Leaf } from "lucide-react";
+import { ArrowLeft, BookOpen, ExternalLink, Leaf } from "lucide-react";
 import { aulas, fonteGoogleDocs, type Bloco } from "./data";
 
 type Secao = { titulo: string; itens: Bloco[] };
@@ -31,11 +31,11 @@ export default function App() {
     <div className="app-shell">
       <header className="hero">
         <div className="hero-top">
-          <div>
+          <a className="account-link" href="#login"><ArrowLeft size={19}/> <span>Entrar na conta</span></a>
+          <div className="institution">
             <strong>Faculdade Nacional de Direito</strong>
             <span>FND · UFRJ · 8º período · 2026.2</span>
           </div>
-          <span className="edition">1ª edição</span>
         </div>
         <div className="hero-main">
           <div className="hero-copy">
@@ -43,9 +43,12 @@ export default function App() {
             <h1>Marxismo e <span>Direito</span></h1>
             <p>Conteúdo organizado a partir do caderno-base da disciplina.</p>
           </div>
-          <div className="meta-box">
-            <div><span>Professor</span><strong>Prof. Ivan Simões</strong></div>
-            <div><span>Semestre</span><strong>2026.2</strong></div>
+          <div className="hero-side">
+            <span className="edition">1ª edição</span>
+            <div className="meta-box">
+              <div><span>Professor</span><strong>Prof. Ivan Simões</strong></div>
+              <div><span>Semestre</span><strong>2026.2</strong></div>
+            </div>
           </div>
         </div>
       </header>
