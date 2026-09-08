@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, BookOpen, ExternalLink, Eye, EyeOff, Leaf } from "lucide-react";
+import { ArrowLeft, BookOpen, ExternalLink, Eye, EyeOff, KeyRound, Leaf, Mail, ShieldCheck } from "lucide-react";
 import { aulas, fonteGoogleDocs, type Bloco } from "./data";
 
 type Secao = { titulo: string; itens: Bloco[] };
@@ -35,32 +35,62 @@ export default function App() {
 
   if (loginAberto) {
     return (
-      <main className="login-shell">
-        <button className="login-back" onClick={() => { setLoginAberto(false); setAvisoLogin(""); }}><ArrowLeft size={17}/> Voltar ao caderno</button>
-        <section className="login-card">
-          <p className="login-eyebrow">FND · UFRJ · 2026.2</p>
-          <h1>Marxismo e <span>Direito</span></h1>
-          <p className="login-copy">Entre na sua conta para acessar os recursos pessoais e, futuramente, manter o caderno sincronizado.</p>
-          <form onSubmit={(e) => { e.preventDefault(); setAvisoLogin("A área de login está pronta. A autenticação real será conectada na próxima etapa."); }}>
-            <label>E-mail
-              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="seuemail@exemplo.com" />
-            </label>
-            <label>Senha
-              <div className="password-field">
-                <input type={mostrarSenha ? "text" : "password"} required value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="Sua senha" />
-                <button type="button" className="password-toggle" onClick={() => setMostrarSenha((v) => !v)} aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}>{mostrarSenha ? <EyeOff size={18}/> : <Eye size={18}/>}</button>
+      <main className="login-page">
+        <section className="login-brand">
+          <div className="login-brand-top">
+            <strong>Faculdade Nacional de Direito</strong>
+            <span>FND · UFRJ · 8º período · 2026.2</span>
+          </div>
+          <div className="login-brand-main">
+            <p>Caderno digital · Caderno 08</p>
+            <h1>Marxismo e <span>Direito</span></h1>
+            <p className="login-brand-copy">Caderno digital da disciplina, com conteúdo organizado a partir do caderno-base.</p>
+          </div>
+          <div className="login-brand-footer">
+            <span><ShieldCheck size={16}/> Ambiente acadêmico</span>
+            <span>FND · UFRJ</span>
+          </div>
+        </section>
+
+        <section className="login-access">
+          <div className="login-geometry" aria-hidden="true" />
+          <section className="login-card">
+            <p className="login-eyebrow">Marxismo e Direito</p>
+            <h2>Acesse o caderno</h2>
+            <p className="login-copy">Entre com sua conta para acessar e sincronizar o conteúdo da disciplina.</p>
+            <div className="login-rule" />
+
+            <form onSubmit={(e) => { e.preventDefault(); setAvisoLogin("A autenticação real será conectada na próxima etapa."); }}>
+              <label>E-mail
+                <div className="input-with-icon">
+                  <Mail size={18}/>
+                  <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="seuemail@ufrj.br" />
+                </div>
+              </label>
+              <label>Senha
+                <div className="input-with-icon password-field">
+                  <KeyRound size={18}/>
+                  <input type={mostrarSenha ? "text" : "password"} required value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="Digite sua senha" />
+                  <button type="button" className="password-toggle" onClick={() => setMostrarSenha((v) => !v)} aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}>{mostrarSenha ? <EyeOff size={18}/> : <Eye size={18}/>}</button>
+                </div>
+              </label>
+              <div className="login-row">
+                <label className="remember"><input type="checkbox" checked={lembrar} onChange={(e) => setLembrar(e.target.checked)} /> Continuar conectado</label>
+                <button className="text-link" type="button">Esqueci minha senha</button>
               </div>
-            </label>
-            <div className="login-row">
-              <label className="remember"><input type="checkbox" checked={lembrar} onChange={(e) => setLembrar(e.target.checked)} /> Continuar conectado</label>
-              <div className="login-links"><button type="button">Esqueci meu e-mail</button><button type="button">Esqueci minha senha</button></div>
+              {avisoLogin && <p className="login-note">{avisoLogin}</p>}
+              <button className="login-primary" type="submit"><KeyRound size={18}/> Entrar no caderno</button>
+            </form>
+
+            <div className="login-divider"><span>ou</span></div>
+            <button className="guest-button" type="button" onClick={() => { setLoginAberto(false); setAvisoLogin(""); }}><BookOpen size={18}/> Entrar sem login · somente leitura</button>
+            <p className="guest-note">Acesso sem login disponível apenas para leitura. Edição e integração com o Google Drive exigem autenticação.</p>
+
+            <div className="login-bottom-links">
+              <button type="button">Esqueci meu e-mail</button><span>·</span><button type="button">Cadastre-se</button>
             </div>
-            {avisoLogin && <p className="login-note">{avisoLogin}</p>}
-            <button className="login-primary" type="submit">Entrar no caderno</button>
-          </form>
-          <div className="login-divider"><span>ou</span></div>
-          <button className="login-register" type="button">Cadastre-se</button>
-          <p className="login-public">O caderno continua disponível para leitura sem login.</p>
+            <p className="privacy-note">Seus dados de acesso são usados apenas para autenticar sua conta acadêmica.</p>
+          </section>
         </section>
       </main>
     );
