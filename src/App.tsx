@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ArrowLeft, BookOpen, ExternalLink, Leaf } from "lucide-react";
+import { ArrowLeft, BookOpen, ExternalLink, Eye, EyeOff, Leaf } from "lucide-react";
 import { aulas, fonteGoogleDocs, type Bloco } from "./data";
 
 type Secao = { titulo: string; itens: Bloco[] };
@@ -24,14 +24,53 @@ function agruparSecoes(blocos: Bloco[]): Secao[] {
 
 export default function App() {
   const [aulaSelecionada, setAulaSelecionada] = useState(1);
+  const [loginAberto, setLoginAberto] = useState(false);
+  const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [lembrar, setLembrar] = useState(true);
+  const [avisoLogin, setAvisoLogin] = useState("");
   const aula = aulas.find((item) => item.numero === aulaSelecionada && item.publicada) ?? aulas[0];
   const secoes = useMemo(() => agruparSecoes(aula.blocos), [aula]);
+
+  if (loginAberto) {
+    return (
+      <main className="login-shell">
+        <button className="login-back" onClick={() => { setLoginAberto(false); setAvisoLogin(""); }}><ArrowLeft size={17}/> Voltar ao caderno</button>
+        <section className="login-card">
+          <p className="login-eyebrow">FND · UFRJ · 2026.2</p>
+          <h1>Marxismo e <span>Direito</span></h1>
+          <p className="login-copy">Entre na sua conta para acessar os recursos pessoais e, futuramente, manter o caderno sincronizado.</p>
+          <form onSubmit={(e) => { e.preventDefault(); setAvisoLogin("A área de login está pronta. A autenticação real será conectada na próxima etapa."); }}>
+            <label>E-mail
+              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="seuemail@exemplo.com" />
+            </label>
+            <label>Senha
+              <div className="password-field">
+                <input type={mostrarSenha ? "text" : "password"} required value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="Sua senha" />
+                <button type="button" className="password-toggle" onClick={() => setMostrarSenha((v) => !v)} aria-label={mostrarSenha ? "Ocultar senha" : "Mostrar senha"}>{mostrarSenha ? <EyeOff size={18}/> : <Eye size={18}/>}</button>
+              </div>
+            </label>
+            <div className="login-row">
+              <label className="remember"><input type="checkbox" checked={lembrar} onChange={(e) => setLembrar(e.target.checked)} /> Continuar conectado</label>
+              <div className="login-links"><button type="button">Esqueci meu e-mail</button><button type="button">Esqueci minha senha</button></div>
+            </div>
+            {avisoLogin && <p className="login-note">{avisoLogin}</p>}
+            <button className="login-primary" type="submit">Entrar no caderno</button>
+          </form>
+          <div className="login-divider"><span>ou</span></div>
+          <button className="login-register" type="button">Cadastre-se</button>
+          <p className="login-public">O caderno continua disponível para leitura sem login.</p>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <div className="app-shell">
       <header className="hero">
         <div className="hero-top">
-          <a className="account-link" href="#login"><ArrowLeft size={19}/> <span>Entrar na conta</span></a>
+          <button className="account-link" onClick={() => setLoginAberto(true)}><ArrowLeft size={19}/> <span>Entrar na conta</span></button>
           <div className="institution">
             <strong>Faculdade Nacional de Direito</strong>
             <span>FND · UFRJ · 8º período · 2026.2</span>
@@ -68,12 +107,7 @@ export default function App() {
             <div className="toc-title"><span>Sumário</span><strong>Aulas</strong></div>
             <nav>
               {aulas.map((item) => (
-                <button
-                  key={item.numero}
-                  disabled={!item.publicada}
-                  className={aula.numero === item.numero ? "active" : ""}
-                  onClick={() => setAulaSelecionada(item.numero)}
-                >
+                <button key={item.numero} disabled={!item.publicada} className={aula.numero === item.numero ? "active" : ""} onClick={() => setAulaSelecionada(item.numero)}>
                   <small>Aula {String(item.numero).padStart(2, "0")}</small>
                   <span>{item.publicada ? item.titulo : "Em preparação"}</span>
                 </button>
@@ -84,36 +118,15 @@ export default function App() {
 
         <section className="lesson-column">
           <div className="lesson-head">
-            <div>
-              <p className="eyebrow">Aula {String(aula.numero).padStart(2, "0")} · Marxismo e Direito</p>
-              <h2>{aula.titulo}</h2>
-              <p>{aula.meta}</p>
-            </div>
+            <div><p className="eyebrow">Aula {String(aula.numero).padStart(2, "0")} · Marxismo e Direito</p><h2>{aula.titulo}</h2><p>{aula.meta}</p></div>
             <BookOpen size={42}/>
           </div>
-
           <div className="sections">
             {secoes.map((secao, indice) => (
-              <article key={`${aula.numero}-${secao.titulo}`}>
-                <span className="number">{String(indice + 1).padStart(2, "0")}</span>
-                <div>
-                  <h3>{secao.titulo}</h3>
-                  <div className="section-body">
-                    {secao.itens.map((item, i) =>
-                      item.tipo === "subsecao"
-                        ? <h4 key={i}>{item.texto}</h4>
-                        : <p key={i}>{item.texto}</p>
-                    )}
-                  </div>
-                </div>
-              </article>
+              <article key={`${aula.numero}-${secao.titulo}`}><span className="number">{String(indice + 1).padStart(2, "0")}</span><div><h3>{secao.titulo}</h3><div className="section-body">{secao.itens.map((item, i) => item.tipo === "subsecao" ? <h4 key={i}>{item.texto}</h4> : <p key={i}>{item.texto}</p>)}</div></div></article>
             ))}
           </div>
-
-          <footer>
-            <span>Marxismo e Direito · Caderno 08</span>
-            <span>Transcrito, organizado e diagramado por Mariana Monteiro</span>
-          </footer>
+          <footer><span>Marxismo e Direito · Caderno 08</span><span>Transcrito, organizado e diagramado por Mariana Monteiro</span></footer>
         </section>
       </main>
     </div>
