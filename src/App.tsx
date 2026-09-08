@@ -44,7 +44,6 @@ export default function App() {
             <p>Conteúdo organizado a partir do caderno-base da disciplina.</p>
           </div>
           <div className="hero-side">
-            <span className="edition">1ª edição</span>
             <div className="meta-box">
               <div><span>Professor</span><strong>Prof. Ivan Simões</strong></div>
               <div><span>Semestre</span><strong>2026.2</strong></div>
