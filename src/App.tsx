@@ -42,8 +42,8 @@ export default function App() {
             <span>FND · UFRJ · 8º período · 2026.2</span>
           </div>
           <div className="login-brand-main">
-            <p>Caderno digital · Caderno 08</p>
-            <h1>Marxismo e <span>Direito</span></h1>
+            <p>Caderno digital · Direito Ambiental</p>
+            <h1>Direito <span>Ambiental</span></h1>
             <p className="login-brand-copy">Caderno digital da disciplina, com conteúdo organizado a partir do caderno-base.</p>
           </div>
           <div className="login-brand-footer">
@@ -55,7 +55,7 @@ export default function App() {
         <section className="login-access">
           <div className="login-geometry" aria-hidden="true" />
           <section className="login-card">
-            <p className="login-eyebrow">Marxismo e Direito</p>
+            <p className="login-eyebrow">Direito Ambiental</p>
             <h2>Acesse o caderno</h2>
             <p className="login-copy">Entre com sua conta para acessar e sincronizar o conteúdo da disciplina.</p>
             <div className="login-rule" />
@@ -108,13 +108,13 @@ export default function App() {
         </div>
         <div className="hero-main">
           <div className="hero-copy">
-            <p className="eyebrow light">Caderno digital · Caderno 08</p>
-            <h1>Marxismo e <span>Direito</span></h1>
+            <p className="eyebrow light">Caderno digital · Direito Ambiental</p>
+            <h1>Direito <span>Ambiental</span></h1>
             <p>Conteúdo organizado a partir do caderno-base da disciplina.</p>
           </div>
           <div className="hero-side">
             <div className="meta-box">
-              <div><span>Professor</span><strong>Prof. Ivan Simões</strong></div>
+              <div><span>Professor</span><strong>Prof. Daniel Braga</strong></div>
               <div><span>Semestre</span><strong>2026.2</strong></div>
             </div>
           </div>
@@ -126,9 +126,13 @@ export default function App() {
           <span className="badge"><Leaf size={13}/> Caderno-base</span>
           <span>Conteúdo conferido no Google Docs</span>
         </div>
-        <a className="secondary" href={fonteGoogleDocs} target="_blank" rel="noreferrer">
-          <ExternalLink size={16}/> Abrir fonte
-        </a>
+        {fonteGoogleDocs ? (
+          <a className="secondary" href={fonteGoogleDocs} target="_blank" rel="noreferrer">
+            <ExternalLink size={16}/> Abrir fonte
+          </a>
+        ) : (
+          <span className="secondary">Fonte do Google Docs a vincular</span>
+        )}
       </section>
 
       <main className="content-grid">
@@ -148,7 +152,7 @@ export default function App() {
 
         <section className="lesson-column">
           <div className="lesson-head">
-            <div><p className="eyebrow">Aula {String(aula.numero).padStart(2, "0")} · Marxismo e Direito</p><h2>{aula.titulo}</h2><p>{aula.meta}</p></div>
+            <div><p className="eyebrow">Aula {String(aula.numero).padStart(2, "0")} · Direito Ambiental</p><h2>{aula.titulo}</h2><p>{aula.meta}</p></div>
             <BookOpen size={42}/>
           </div>
           <div className="sections">
@@ -156,7 +160,7 @@ export default function App() {
               <article key={`${aula.numero}-${secao.titulo}`}><span className="number">{String(indice + 1).padStart(2, "0")}</span><div><h3>{secao.titulo}</h3><div className="section-body">{secao.itens.map((item, i) => item.tipo === "subsecao" ? <h4 key={i}>{item.texto}</h4> : <p key={i}>{item.texto}</p>)}</div></div></article>
             ))}
           </div>
-          <footer><span>Marxismo e Direito · Caderno 08</span><span>Transcrito, organizado e diagramado por Mariana Monteiro</span></footer>
+          <footer><span>Direito Ambiental · 2026.2</span><span>Transcrito, organizado e diagramado por Mariana Monteiro</span></footer>
         </section>
       </main>
     </div>
