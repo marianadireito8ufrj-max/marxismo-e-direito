@@ -1,7 +1,17 @@
 export type Bloco = { tipo: "secao" | "subsecao" | "paragrafo"; texto: string };
 export type Aula = { numero: number; titulo: string; meta: string; publicada: boolean; blocos: Bloco[] };
+export type PastaGoogleDrive = { id: string; nome: string; url: string; descricao: string };
 
 export const fonteGoogleDocs = "https://docs.google.com/document/d/1sLIdEpipDngoW0F_sNyjNZywLO4MqbrXUQSAw5m1FDI/edit";
+
+export const pastasGoogleDrive: PastaGoogleDrive[] = [
+  { id: "1EHfcUx9p9lgxAk9iPlQ3rQ4zbcmSPVIP", nome: "Anotações/Caderno 📝", url: "https://drive.google.com/drive/folders/1EHfcUx9p9lgxAk9iPlQ3rQ4zbcmSPVIP", descricao: "Acessar esta pasta da disciplina." },
+  { id: "1EIrDGihqXDjGyATP59LOAuFSREovzYZE", nome: "Ementa 📝", url: "https://drive.google.com/drive/folders/1EIrDGihqXDjGyATP59LOAuFSREovzYZE", descricao: "Acessar esta pasta da disciplina." },
+  { id: "18PJgsJZGHIWyNVULOji_Dh3r3dOTurOC", nome: "Transcrições ⏳", url: "https://drive.google.com/drive/folders/18PJgsJZGHIWyNVULOji_Dh3r3dOTurOC", descricao: "Acessar esta pasta da disciplina." },
+  { id: "1E5esvT5JnSwdmiAmgrSlM1QXT5d8nhWR", nome: "Gravações 🎤", url: "https://drive.google.com/drive/folders/1E5esvT5JnSwdmiAmgrSlM1QXT5d8nhWR", descricao: "Acessar esta pasta da disciplina." },
+  { id: "1w0toPiKeU5I36JqtBAcSRCm0Ot8e4iAc", nome: "Textos do semestre 📝", url: "https://drive.google.com/drive/folders/1w0toPiKeU5I36JqtBAcSRCm0Ot8e4iAc", descricao: "Acessar esta pasta da disciplina." },
+  { id: "1Z3jcZOPDZdhqRYTrP9uX_7VSYwtRjOaL", nome: "Caderno Digital 📝", url: "https://drive.google.com/drive/folders/1Z3jcZOPDZdhqRYTrP9uX_7VSYwtRjOaL", descricao: "Acessar esta pasta da disciplina." }
+];
 
 export const aulas: Aula[] = [
   {
@@ -56,7 +66,9 @@ export const aulas: Aula[] = [
       { tipo: "subsecao", texto: "1.1 Materialismo" },
       { tipo: "paragrafo", texto: "O materialismo foi indicado como um dos elementos centrais do método." },
       { tipo: "subsecao", texto: "1.2 Dialética" },
-      { tipo: "paragrafo", texto: "Para Marx, tudo é um processo. A realidade social é compreendida a partir de elementos em relação e da contradição - “Aufhebung”" }
+      { tipo: "paragrafo", texto: "Para Marx, tudo é um processo. A realidade social é compreendida a partir de elementos em relação e da contradição - “Aufhebung”" },
+      { tipo: "subsecao", texto: "1.3..1 Leitura mencionada" },
+      { tipo: "paragrafo", texto: "Manuscritos Econômico-Filosóficos — capítulo sobre trabalho estranhado e propriedade privada." }
     ]
   },
   ...Array.from({ length: 14 }, (_, index) => ({
