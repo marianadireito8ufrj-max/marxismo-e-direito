@@ -1,8 +1,10 @@
-import { useMemo, useState } from "react";
-import { BookOpen, ExternalLink, FolderOpen, Leaf, ShieldCheck } from "lucide-react";
-import { aulas, fonteGoogleDocs, pastasGoogleDrive, type Bloco } from "./data";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { BookOpen, ExternalLink, FolderOpen, Leaf, RefreshCw, ShieldCheck } from "lucide-react";
+import { aulas, fonteGoogleDocs, pastasGoogleDrive, type Aula, type Bloco } from "./data";
+import { extrairAulasDoGoogleDocs } from "./googleDocsSync";
 
 type Secao = { titulo: string; itens: Bloco[] };
+type StatusSync = "inicial" | "atualizando" | "sucesso" | "erro";
 
 function agruparSecoes(blocos: Bloco[]): Secao[] {
   const secoes: Secao[] = [];
@@ -24,9 +26,77 @@ function agruparSecoes(blocos: Bloco[]): Secao[] {
 
 export default function App() {
   const [aulaSelecionada, setAulaSelecionada] = useState(1);
-  const aula = aulas.find((item) => item.numero === aulaSelecionada && item.publicada) ?? aulas[0];
+  const [aulasAtuais, setAulasAtuais] = useState<Aula[]>(aulas);
+  const [statusSync, setStatusSync] = useState<StatusSync>("inicial");
+  const [ultimaAtualizacao, setUltimaAtualizacao] = useState<Date | null>(null);
+
+  const atualizarPeloGoogleDocs = useCallback(async () => {
+    setStatusSync("atualizando");
+
+    try {
+      const response = await fetch(`/api/google-docs?ts=${Date.now()}`, {
+        cache: "no-store",
+        headers: { Accept: "application/json" },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Falha na sincronização: ${response.status}`);
+      }
+
+      const payload = await response.json() as { text?: string; fetchedAt?: string };
+
+      if (!payload.text) {
+        throw new Error("O Google Docs não retornou conteúdo.");
+      }
+
+      const sincronizadas = extrairAulasDoGoogleDocs(payload.text, aulas);
+      setAulasAtuais(sincronizadas);
+      setUltimaAtualizacao(payload.fetchedAt ? new Date(payload.fetchedAt) : new Date());
+      setStatusSync("sucesso");
+    } catch (error) {
+      console.error("Não foi possível atualizar pelo Google Docs:", error);
+      setStatusSync("erro");
+    }
+  }, []);
+
+  useEffect(() => {
+    void atualizarPeloGoogleDocs();
+
+    const intervalo = window.setInterval(() => {
+      void atualizarPeloGoogleDocs();
+    }, 60_000);
+
+    const atualizarAoRetornar = () => {
+      if (document.visibilityState === "visible") {
+        void atualizarPeloGoogleDocs();
+      }
+    };
+
+    window.addEventListener("focus", atualizarAoRetornar);
+    document.addEventListener("visibilitychange", atualizarAoRetornar);
+
+    return () => {
+      window.clearInterval(intervalo);
+      window.removeEventListener("focus", atualizarAoRetornar);
+      document.removeEventListener("visibilitychange", atualizarAoRetornar);
+    };
+  }, [atualizarPeloGoogleDocs]);
+
+  const aula =
+    aulasAtuais.find((item) => item.numero === aulaSelecionada && item.publicada) ??
+    aulasAtuais.find((item) => item.publicada) ??
+    aulas[0];
+
   const secoes = useMemo(() => agruparSecoes(aula.blocos), [aula]);
 
+  const textoStatus =
+    statusSync === "atualizando"
+      ? "Atualizando conteúdo..."
+      : statusSync === "erro"
+        ? "Google Docs indisponível · exibindo última versão disponível"
+        : ultimaAtualizacao
+          ? `Sincronizado às ${ultimaAtualizacao.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`
+          : "Sincronização automática ativada";
 
   return (
     <div className="app-shell">
@@ -54,13 +124,22 @@ export default function App() {
       </header>
 
       <section className="source-bar">
-        <div>
+        <div className="source-info">
           <span className="badge"><Leaf size={13}/> Caderno-base</span>
-          <span>Conteúdo conferido no Google Docs</span>
+          <div className="source-copy">
+            <span>Conteúdo sincronizado com o Google Docs</span>
+            <small className={statusSync === "erro" ? "sync-status error" : "sync-status"}>{textoStatus}</small>
+          </div>
         </div>
-        <a className="secondary" href={fonteGoogleDocs} target="_blank" rel="noreferrer">
-          <ExternalLink size={16}/> Abrir fonte
-        </a>
+        <div className="source-actions">
+          <button className="secondary sync-button" type="button" onClick={() => void atualizarPeloGoogleDocs()} disabled={statusSync === "atualizando"}>
+            <RefreshCw size={16} className={statusSync === "atualizando" ? "spin" : ""}/>
+            {statusSync === "atualizando" ? "Atualizando..." : "Atualizar pelo Google Docs"}
+          </button>
+          <a className="secondary" href={fonteGoogleDocs} target="_blank" rel="noreferrer">
+            <ExternalLink size={16}/> Abrir fonte
+          </a>
+        </div>
       </section>
 
       <section className="drive-library" aria-labelledby="drive-library-title">
@@ -92,7 +171,7 @@ export default function App() {
           <div className="toc">
             <div className="toc-title"><span>Sumário</span><strong>Aulas</strong></div>
             <nav>
-              {aulas.map((item) => (
+              {aulasAtuais.map((item) => (
                 <button key={item.numero} disabled={!item.publicada} className={aula.numero === item.numero ? "active" : ""} onClick={() => setAulaSelecionada(item.numero)}>
                   <small>Aula {String(item.numero).padStart(2, "0")}</small>
                   <span>{item.publicada ? item.titulo : "Em preparação"}</span>
